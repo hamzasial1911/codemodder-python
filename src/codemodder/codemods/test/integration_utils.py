@@ -10,6 +10,7 @@ import git
 from codemodder import __version__, registry
 
 from .validations import execute_code
+from security import safe_command
 
 SAMPLES_DIR = "tests/samples"
 # Enable import of test modules from test directory
@@ -174,8 +175,7 @@ class BaseIntegrationTest(DependencyTestMixin, CleanRepoMixin):
         self.check_code_before()
         self.check_dependencies_before()
 
-        completed_process = subprocess.run(
-            command,
+        completed_process = safe_command.run(subprocess.run, command,
             check=False,
             shell=False,
         )
@@ -189,8 +189,7 @@ class BaseIntegrationTest(DependencyTestMixin, CleanRepoMixin):
 
     def _run_idempotency_chec(self, command):
         # idempotency test, run it again and assert no files changed
-        completed_process = subprocess.run(
-            command,
+        completed_process = safe_command.run(subprocess.run, command,
             check=False,
         )
         assert completed_process.returncode == 0
